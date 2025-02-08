@@ -22,9 +22,7 @@ export default function UserTask() {
         return;
       }
 
-      const response = await axiosInstance.get("/user/tasks", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axiosInstance.get("/user/tasks");
 
       setTasks(response.data);
     } catch (error) {
@@ -71,9 +69,9 @@ export default function UserTask() {
 
       if (isUpdating) {
         // Update task
-        const response = await axiosInstance.put(`/user/tasks/${taskIdToUpdate}`,
-          { title: taskTitle, description: taskDescription },
-          { headers: { Authorization: `Bearer ${token}` } }
+        const response = await axiosInstance.put(
+          `/user/tasks/${taskIdToUpdate}`,
+          { title: taskTitle, description: taskDescription }
         );
         setTasks((prevTasks) =>
           prevTasks.map((task) =>
@@ -82,11 +80,10 @@ export default function UserTask() {
         );
       } else {
         // Create new task
-        const response = await axiosInstance.post(
-          "/user/tasks",
-          { title: taskTitle, description: taskDescription },
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
+        const response = await axiosInstance.post("/user/tasks", {
+          title: taskTitle,
+          description: taskDescription,
+        });
         setTasks((prevTasks) => [...prevTasks, response.data]);
       }
 
@@ -108,9 +105,7 @@ export default function UserTask() {
         return;
       }
 
-      await axiosInstance.delete(`/user/tasks/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      await axiosInstance.delete(`/user/tasks/${id}`);
 
       setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
     } catch (error) {

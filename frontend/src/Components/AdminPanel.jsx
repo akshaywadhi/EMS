@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate} from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; 
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import "./AdminPanel.css";
 
 import axiosInstance from "../utils/axiosInstance";
 import CalendarMeet from "./Admin/CalendarMeet";
 import EmpDetail from "./Admin/EmpDetail";
 import FolderViewer from "./User/Docs";
-
+import Email from "./Admin/Email";
 
 export default function AdminPanel() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -18,6 +18,7 @@ export default function AdminPanel() {
   const [updatingUserId, setUpdatingUserId] = useState(null);
   const [showPass, setShowPass] = useState(false);
   const [showDoc, setShowDoc] = useState(false);
+  const [email, setEmail] = useState(false);
 
   const [user, setUser] = useState({
     name: "",
@@ -33,10 +34,9 @@ export default function AdminPanel() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    
     const token = localStorage.getItem("token");
     if (!token) {
-      navigate("/"); 
+      navigate("/");
     } else {
       try {
         const decoded = jwtDecode(token);
@@ -45,7 +45,7 @@ export default function AdminPanel() {
         }
       } catch (error) {
         console.error("Invalid token", error);
-        navigate("/"); 
+        navigate("/");
       }
     }
 
@@ -68,7 +68,17 @@ export default function AdminPanel() {
     setEmployeeDetail(false);
     setCalendar(false);
     setShowDoc(false);
-    setShowPass(false)
+    setShowPass(false);
+    setEmail(false);
+  };
+
+  const handleEmail = () => {
+    setShowRegisterForm(false);
+    setEmployeeDetail(false);
+    setCalendar(false);
+    setShowDoc(false);
+    setShowPass(false);
+    setEmail(true);
   };
 
   const handleEmployeeDetailClick = () => {
@@ -76,7 +86,8 @@ export default function AdminPanel() {
     setEmployeeDetail(true);
     setCalendar(false);
     setShowDoc(false);
-    setShowPass(false)
+    setShowPass(false);
+    setEmail(false);
   };
 
   const handleChangePass = () => {
@@ -84,15 +95,17 @@ export default function AdminPanel() {
     setEmployeeDetail(false);
     setCalendar(false);
     setShowDoc(false);
-    setShowPass(true)
-  }
+    setShowPass(true);
+    setEmail(false);
+  };
 
   const handleCalendar = () => {
     setEmployeeDetail(false);
     setShowRegisterForm(false);
     setCalendar(true);
     setShowDoc(false);
-    setShowPass(false)
+    setShowPass(false);
+    setEmail(false);
   };
 
   const handleShowDoc = () => {
@@ -100,7 +113,8 @@ export default function AdminPanel() {
     setShowRegisterForm(false);
     setCalendar(false);
     setShowDoc(true);
-    setShowPass(false)
+    setShowPass(false);
+    setEmail(false);
   };
 
   const handleChange = (e) => {
@@ -116,12 +130,10 @@ export default function AdminPanel() {
         alert("User updated successfully!");
         setUpdatingUserId(null);
       } else {
-      
         await axiosInstance.post("/addUser", user);
         alert("User registered successfully!");
       }
 
-    
       setUser({
         name: "",
         contact: "",
@@ -142,8 +154,8 @@ export default function AdminPanel() {
   };
 
   const handleLogout = () => {
-    localStorage.removeItem("token"); 
-    navigate("/"); 
+    localStorage.removeItem("token");
+    navigate("/");
   };
 
   return (
@@ -164,7 +176,7 @@ export default function AdminPanel() {
         <ul className="sidebar-nav">
           <li className="sidebar-item">
             <a className="sidebar-link" onClick={handleShowDoc}>
-            <i class="fa-regular fa-file"></i>
+              <i class="fa-regular fa-file"></i>
               <span>Documents</span>
             </a>
           </li>
@@ -188,13 +200,25 @@ export default function AdminPanel() {
             </a>
           </li>
           <li className="sidebar-item">
+            <a
+              className="sidebar-link collapsed has-dropdown"
+              onClick={handleEmail}
+            >
+               <i class="fa-regular fa-envelope"></i>
+              <span>Email</span>
+            </a>
+          </li>
+          <li className="sidebar-item">
             <a className="sidebar-link" onClick={handleCalendar}>
               <i className="fa-regular fa-calendar"></i>
               <span>Calendar</span>
             </a>
           </li>
           <li className="sidebar-item">
-            <a className="sidebar-link collapsed has-dropdown" onClick={handleChangePass}>
+            <a
+              className="sidebar-link collapsed has-dropdown"
+              onClick={handleChangePass}
+            >
               <i class="fa-solid fa-lock-open"></i>
               <span>Change Password</span>
             </a>
@@ -212,11 +236,7 @@ export default function AdminPanel() {
           <h1>Employee Management System</h1>
         </div>
 
-        {
-          showDoc && (
-            <FolderViewer/>
-          )
-        }
+        {showDoc && <FolderViewer />}
 
         {/* Show Register Employee Form */}
         {showRegisterForm && (
@@ -303,6 +323,13 @@ export default function AdminPanel() {
           </div>
         )}
 
+        {/*Email*/}
+        {
+          email && (
+            <Email/>
+          )
+        }
+
         {/* Show Employee Details */}
         {employeeDetail && (
           <EmpDetail
@@ -321,8 +348,6 @@ export default function AdminPanel() {
         {/* Show Calendar */}
         {calendar && <CalendarMeet />}
       </div>
-
-     
     </div>
   );
 }

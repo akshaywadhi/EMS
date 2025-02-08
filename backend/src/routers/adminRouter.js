@@ -7,7 +7,8 @@ import {
   updateUser,
   userCreate,
   sendEmail,
-
+fetchEmails,
+repliedEmails
 } from "../controllers/adminController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import emailMiddleware from "../middleware/emailMiddleware.js";
@@ -21,4 +22,6 @@ router
   .delete("/deleteUser/:id", deleteUser)
   .put("/updateUser/:id", updateUser)
   .post("/meeting", meetings)
-  .post("/sendEmail", emailMiddleware, sendEmail);
+  .post("/sendEmail", emailMiddleware, sendEmail)
+  .get('/sentEmails', fetchEmails)
+  .get('/repliedEmails', repliedEmails);

@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import Calendar from "react-calendar";
 import axiosInstance from "../../utils/axiosInstance";
+import './Calendar.css';
+
 
 export default function CalendarMeet() {
   const [selectedDate, setSelectedDate] = useState(null);

@@ -73,6 +73,7 @@ export const getAllMeetings = async (req, res) => {
 export const createTask = async (req, res) => {
   try {
     const { title, description } = req.body;
+    console.log(title, description)
     if (!req.user) {
       return res.status(401).json({ message: "Unauthorized" });
     }
@@ -171,3 +172,28 @@ export const getUserEmails = async (req, res) => {
   }
 };
 
+
+
+export const replyAdmin = async (req, res) => {
+  try {
+    const { replyMessage, userEmail } = req.body;
+    console.log(replyMessage, userEmail)
+
+    if (!replyMessage) {
+      return res.status(400).json({ message: "Reply message is required." });
+    }
+
+    const adminId = "67a32f5de5a557be5a70568d"; // Store in backend only
+
+    const newReply = new EmailModel({
+      email : userEmail,
+      adminId, // Automatically assigning to admin
+      message: replyMessage,
+    });
+
+    await newReply.save();
+    res.json({ message: "Reply sent to admin successfully!" });
+  } catch (error) {
+    res.status(500).json({ message: "Error sending reply." });
+  }
+}

@@ -5,7 +5,6 @@ import { userModel } from "../model/userModel.js";
 import { meetingModel } from "../model/meeting.js";
 import { EmailModel } from "../model/emailModel.js";
 
-
 //admin login
 
 export const adminLogin = async (req, res) => {
@@ -31,7 +30,6 @@ export const adminLogin = async (req, res) => {
     res.status(500).send({ error: error.message });
   }
 };
-
 
 //create user only admin can create it
 
@@ -63,18 +61,15 @@ export const userCreate = async (req, res) => {
     res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
     console.error("Server Error:", error);
-    res
-      .status(500)
-      .json({ message: "Server error"});
+    res.status(500).json({ message: "Server error" });
   }
 };
-
 
 //fetching all users
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await userModel.find().select("-password"); 
+    const users = await userModel.find().select("-password");
     res.json(users);
   } catch (error) {
     console.error("Fetch Users Error:", error);
@@ -82,19 +77,16 @@ export const getUsers = async (req, res) => {
   }
 };
 
-
 //deleting user
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
-
 
     const user = await userModel.findById(id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-   
     await userModel.findByIdAndDelete(id);
 
     res.status(200).json({ message: "User deleted successfully" });
@@ -105,16 +97,15 @@ export const deleteUser = async (req, res) => {
 
 //updating user
 
-
 export const updateUser = async (req, res) => {
-  const { id } = req.params; 
-  const { name, contact, email, domain, employeeId } = req.body; 
+  const { id } = req.params;
+  const { name, contact, email, domain, employeeId } = req.body;
 
   try {
     const updatedUser = await userModel.findByIdAndUpdate(
       id,
       { name, contact, email, domain, employeeId },
-      { new: true } 
+      { new: true }
     );
 
     if (!updatedUser) {
@@ -128,8 +119,6 @@ export const updateUser = async (req, res) => {
   }
 };
 
-
-
 //creating meetings
 export const meetings = async (req, res) => {
   try {
@@ -140,7 +129,6 @@ export const meetings = async (req, res) => {
     res.status(400).send(err);
   }
 };
-
 
 //sending emails
 
@@ -155,7 +143,7 @@ export const sendEmail = async (req, res) => {
     }
 
     const newEmail = new EmailModel({
-      user: user._id, 
+      user: user._id,
       email,
       subject,
       message,
@@ -169,7 +157,25 @@ export const sendEmail = async (req, res) => {
   }
 };
 
+export const fetchEmails = async (req, res) => {
+  try {
+    const emails = await EmailModel.find({ adminId: { $exists: false } }); // Fetch emails from DB
+    res.json(emails);
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching emails" });
+  }
+};
 
 
+export const repliedEmails = async (req, res) => {
+  
 
-
+  try {
+    // Query your database to get replies related to the specific adminId
+    const replies = await EmailModel.find({ adminId : "67a32f5de5a557be5a70568d" }); // Assuming you have a 'Reply' model
+    res.status(200).json(replies);
+  } catch (error) {
+    console.error('Error fetching replies:', error);
+    res.status(500).json({ error: 'Failed to fetch replies' });
+  }
+}
