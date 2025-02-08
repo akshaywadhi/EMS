@@ -5,7 +5,7 @@ export default function Email() {
   const [emails, setEmails] = useState([]);
   const [loading, setLoading] = useState(true);
   const [replyMessage, setReplyMessage] = useState("");
-  const [selectedEmail, setSelectedEmail] = useState(""); // User's email
+  const [selectedEmail, setSelectedEmail] = useState(""); 
 
   useEffect(() => {
     const fetchEmails = async () => {
@@ -30,18 +30,18 @@ export default function Email() {
     }
 
     try {
-      // Send the reply message along with the user's email (selectedEmail)
+      
       const payload = {
         replyMessage,
-        userEmail: selectedEmail, // Send the user's email for reply
+        userEmail: selectedEmail, 
       };
 
-      // Send the reply to the backend to process sending the email
+     
       await axiosInstance.post("/user/replyAdmin", payload);
 
       alert("Reply sent to admin successfully!");
-      setReplyMessage(""); // Clear input field
-      setSelectedEmail(""); // Reset selected email
+      setReplyMessage(""); 
+      setSelectedEmail(""); 
     } catch (error) {
       console.error("Error sending reply:", error.response?.data || error);
       alert("Failed to send reply.");
@@ -63,7 +63,7 @@ export default function Email() {
                 className="btn btn-warning text-white ms-2"
                 data-bs-toggle="modal"
                 data-bs-target="#replyModal"
-                onClick={() => setSelectedEmail(email.email)} // Set the user's email on button click
+                onClick={() => setSelectedEmail(email.email)} 
               >
                 Reply
               </button>

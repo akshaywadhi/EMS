@@ -157,9 +157,11 @@ export const sendEmail = async (req, res) => {
   }
 };
 
+//fetching emails excluding the adminId Emails
+
 export const fetchEmails = async (req, res) => {
   try {
-    const emails = await EmailModel.find({ adminId: { $exists: false } }); // Fetch emails from DB
+    const emails = await EmailModel.find({ adminId: { $exists: false } });
     res.json(emails);
   } catch (error) {
     res.status(500).json({ message: "Error fetching emails" });
@@ -167,12 +169,14 @@ export const fetchEmails = async (req, res) => {
 };
 
 
+//fetching replied emails
+
 export const repliedEmails = async (req, res) => {
   
 
   try {
-    // Query your database to get replies related to the specific adminId
-    const replies = await EmailModel.find({ adminId : "67a32f5de5a557be5a70568d" }); // Assuming you have a 'Reply' model
+    // fetching emails specific which has adminId
+    const replies = await EmailModel.find({ adminId : "67a32f5de5a557be5a70568d" }); 
     res.status(200).json(replies);
   } catch (error) {
     console.error('Error fetching replies:', error);

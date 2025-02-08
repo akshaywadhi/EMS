@@ -174,6 +174,8 @@ export const getUserEmails = async (req, res) => {
 
 
 
+//replying to admin only
+
 export const replyAdmin = async (req, res) => {
   try {
     const { replyMessage, userEmail } = req.body;
@@ -183,11 +185,11 @@ export const replyAdmin = async (req, res) => {
       return res.status(400).json({ message: "Reply message is required." });
     }
 
-    const adminId = "67a32f5de5a557be5a70568d"; // Store in backend only
+    const adminId = "67a32f5de5a557be5a70568d"; 
 
     const newReply = new EmailModel({
       email : userEmail,
-      adminId, // Automatically assigning to admin
+      adminId, 
       message: replyMessage,
     });
 

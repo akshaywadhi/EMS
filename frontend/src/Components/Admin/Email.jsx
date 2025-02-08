@@ -14,9 +14,9 @@ export default function Email() {
       setLoading(true);
       setError(null);
       
-      const response = await axiosInstance.get('/sentEmails'); // Adjust API endpoint
+      const response = await axiosInstance.get('/sentEmails'); 
       setEmails(response.data);
-      setShowModal(true); // Open modal after fetching data
+      setShowModal(true); 
     } catch (err) {
       setError('Failed to fetch emails');
     } finally {

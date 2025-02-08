@@ -11,17 +11,17 @@ export default function UserDetail() {
   const fetchUserData = async () => {
     try {
       const token = localStorage.getItem("token");
-      console.log("Token:", token); // Log the token for debugging
+      console.log("Token:", token); 
       const response = await axiosInstance.get("/user/getUserDetail", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log("Response:", response.data); // Log the response data for debugging
-      setUserData(response.data); // Store user details in state
+      console.log("Response:", response.data); 
+      setUserData(response.data); 
     } catch (error) {
       console.error("Error fetching user data:", error);
-      console.log("Error Response:", error.response); // Log the error response for debugging
+      console.log("Error Response:", error.response); 
       alert("Failed to fetch user data");
     }
   };

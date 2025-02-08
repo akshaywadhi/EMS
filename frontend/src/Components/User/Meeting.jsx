@@ -18,6 +18,12 @@ export default function Meeting() {
     }
   };
 
+  const formatDate = (dateString) => {
+    const date  = new Date(dateString);
+    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+    return date.toLocaleDateString('en-US', options);
+  };
+
   return (
     <div className="container w-75">
       <div className='text-center text-primary me-5'>
@@ -34,7 +40,7 @@ export default function Meeting() {
           {meetingData.length > 0 ? (
             meetingData.map((meeting) => (
               <tr key={meeting._id}>
-                <td>{meeting.date}</td>
+                <td>{formatDate(meeting.date)}</td>
                 <td>{meeting.purpose}</td>
               </tr>
             ))
