@@ -35,7 +35,7 @@ export const adminLogin = async (req, res) => {
 
 export const userCreate = async (req, res) => {
   try {
-    const { name, contact, email, password, domain, employeeId } = req.body;
+    const { name, contact, email, password, domain, employeeId, resumeUrl } = req.body;
     console.log(req.body);
 
     //checking user exist or not
@@ -54,6 +54,7 @@ export const userCreate = async (req, res) => {
       password: hashedPassword,
       domain,
       employeeId,
+      resumeUrl
     });
 
     await newUser.save();
@@ -99,12 +100,12 @@ export const deleteUser = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { name, contact, email, domain, employeeId } = req.body;
+  const { name, contact, email, domain, employeeId, resumeUrl } = req.body;
 
   try {
     const updatedUser = await userModel.findByIdAndUpdate(
       id,
-      { name, contact, email, domain, employeeId },
+      { name, contact, email, domain, employeeId, resumeUrl },
       { new: true }
     );
 
@@ -181,5 +182,28 @@ export const repliedEmails = async (req, res) => {
   } catch (error) {
     console.error('Error fetching replies:', error);
     res.status(500).json({ error: 'Failed to fetch replies' });
+  }
+}
+
+
+export const changePass = async (req,res) => {
+
+  const {oldPass, newPass} = req.body
+
+  try {
+
+    const user = await adminModel.findOne({_id : '67a32f5de5a557be5a70568d'})
+    
+    if(oldPass !== user.password){
+     return res.status(401).json({message : 'Invalid Old Password'})
+    }
+
+    user.password = newPass
+
+    await user.save()
+    return res.status(201).send({message : 'Password Changed Successfully'})
+    
+  } catch (error) {
+    return res.status(500).json({error})
   }
 }

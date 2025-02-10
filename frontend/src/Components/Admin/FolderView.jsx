@@ -1,35 +1,12 @@
 import axios from 'axios';
 import React, { useEffect, useState } from 'react';
-import axiosInstance from '../../utils/axiosInstance';
 
-export  function FolderViewer() {
+
+export function FolderViewerAdmin() {
   const [files, setFiles] = useState([]);
   const [directoryHandle, setDirectoryHandle] = useState(null);
-  const [userData, setUserData] = useState(null)
+  
 
-
-  useEffect(() => {
-
-    fetchUserData()
-
-  },[])
-  const fetchUserData = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      console.log("Token:", token); 
-      const response = await axiosInstance.get("/user/getUserDetail", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      console.log("Response:", response.data); 
-      setUserData(response.data); 
-    } catch (error) {
-      console.error("Error fetching user data:", error);
-      console.log("Error Response:", error.response); 
-      alert("Failed to fetch user data");
-    }
-  };
 
 
   const handleFolderOpen = async () => {
@@ -70,13 +47,7 @@ export  function FolderViewer() {
 
   return (
     <div className="container mt-4">
-      <h4>User Files</h4>
-{
-  userData && (
-    <a href={userData.resumeUrl} target="_blank" rel="noopener noreferrer">Resume</a>
-  )
-}
-      <hr/>
+      
       <button className="btn btn-primary mb-4" onClick={handleFolderOpen}>
         Open Folder
       </button>

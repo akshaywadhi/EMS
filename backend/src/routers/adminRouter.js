@@ -8,7 +8,8 @@ import {
   userCreate,
   sendEmail,
 fetchEmails,
-repliedEmails
+repliedEmails,
+changePass
 } from "../controllers/adminController.js";
 import { authMiddleware } from "../middleware/authMiddleware.js";
 import emailMiddleware from "../middleware/emailMiddleware.js";
@@ -24,4 +25,5 @@ router
   .post("/meeting", meetings)
   .post("/sendEmail", emailMiddleware, sendEmail)
   .get('/sentEmails', fetchEmails)
-  .get('/repliedEmails', repliedEmails);
+  .get('/repliedEmails', repliedEmails)
+  .put('/changePass', changePass);

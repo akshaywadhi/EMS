@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import "./AdminPanel.css";
-
+import axios from "axios";
 import axiosInstance from "../utils/axiosInstance";
 import CalendarMeet from "./Admin/CalendarMeet";
 import EmpDetail from "./Admin/EmpDetail";
-import FolderViewer from "./User/Docs";
+import { FolderViewerAdmin } from "./Admin/FolderView";
 import Email from "./Admin/Email";
+import ChangePass from "./Admin/ChangePass";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function AdminPanel() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -20,6 +23,8 @@ export default function AdminPanel() {
   const [showDoc, setShowDoc] = useState(false);
   const [email, setEmail] = useState(false);
 
+  const fileInputRef = useRef(null)
+
   const [user, setUser] = useState({
     name: "",
     contact: "",
@@ -27,9 +32,11 @@ export default function AdminPanel() {
     password: "",
     domain: "",
     employeeId: "",
+    resumeUrl: "",
   });
-
+  const [file, setFile] = useState(null);
   const [renderUser, setRenderUser] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
@@ -55,11 +62,41 @@ export default function AdminPanel() {
   }, [navigate]);
 
   const fetchUsers = async () => {
+  
     try {
       const response = await axiosInstance.get("/users"); // Fetch users from backend
       setRenderUser(response.data); // Store users in state
     } catch (error) {
       alert(error.response?.data?.message || "Failed to fetch users");
+    }
+  };
+
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
+  const uploadToCloudinary = async () => {
+    if (!file) {
+      alert("Please select a file to upload.");
+      return null;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file); 
+    formData.append("upload_preset", "tars_files_upload");
+    formData.append("resource_type", "raw");
+    
+
+    try {
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/dh6dwf1n6/raw/upload`,
+        formData
+      );
+      return response.data.secure_url;
+    } catch (error) {
+      console.error("Error uploading to Cloudinary:", error);
+      alert("Failed to upload file.");
+      return null;
     }
   };
 
@@ -122,15 +159,24 @@ export default function AdminPanel() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setIsLoading(true);
     try {
+      toast.info('Loading...')
+      const resumeUrl = await uploadToCloudinary(); 
+      if (!resumeUrl){
+        setIsLoading(false)
+        return;
+      }  
+
+      const userData = { ...user, resumeUrl }; 
+
       if (isUpdating) {
         // Update User
-        await axiosInstance.put(`/updateUser/${updatingUserId}`, user);
+        await axiosInstance.put(`/updateUser/${updatingUserId}`, userData);
         alert("User updated successfully!");
         setUpdatingUserId(null);
       } else {
-        await axiosInstance.post("/addUser", user);
+        await axiosInstance.post("/addUser", userData);
         alert("User registered successfully!");
       }
 
@@ -141,15 +187,20 @@ export default function AdminPanel() {
         password: "",
         domain: "",
         employeeId: "",
+        resumeUrl: "",
       });
       setIsUpdating(false);
       setUpdatingUserId(null);
+      setFile(null);
+      fileInputRef.current.value = ''
       fetchUsers();
     } catch (error) {
       console.error("Error:", error.response || error);
       alert(
         `Error: ${error.response?.data?.message || "Failed to process request"}`
-      );
+      )
+    }finally {
+      setIsLoading(false); 
     }
   };
 
@@ -171,6 +222,7 @@ export default function AdminPanel() {
           </button>
           <div className="sidebar-logo">
             <a href="">Tars Technology</a>
+             
           </div>
         </div>
         <ul className="sidebar-nav">
@@ -204,7 +256,7 @@ export default function AdminPanel() {
               className="sidebar-link collapsed has-dropdown"
               onClick={handleEmail}
             >
-               <i class="fa-regular fa-envelope"></i>
+              <i class="fa-regular fa-envelope"></i>
               <span>Email</span>
             </a>
           </li>
@@ -236,7 +288,7 @@ export default function AdminPanel() {
           <h1>Employee Management System</h1>
         </div>
 
-        {showDoc && <FolderViewer />}
+        {showDoc && <FolderViewerAdmin/>}
 
         {/* Show Register Employee Form */}
         {showRegisterForm && (
@@ -248,6 +300,7 @@ export default function AdminPanel() {
                   : "Register Employee"}
               </span>
             </h3>
+            <ToastContainer autoClose={2000}/>
             <form onSubmit={handleSubmit}>
               <div className="mb-3">
                 <label className="form-label">Name</label>
@@ -295,6 +348,17 @@ export default function AdminPanel() {
                 />
               </div>
               <div className="mb-3">
+                <label className="form-label">Upload Resume</label>
+                <input
+                  type="file"
+                  className="form-control"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                  ref={fileInputRef}
+                  required
+                />
+              </div>
+              <div className="mb-3">
                 <label className="form-label">Domain</label>
                 <input
                   type="text"
@@ -324,11 +388,7 @@ export default function AdminPanel() {
         )}
 
         {/*Email*/}
-        {
-          email && (
-            <Email/>
-          )
-        }
+        {email && <Email />}
 
         {/* Show Employee Details */}
         {employeeDetail && (
@@ -347,6 +407,10 @@ export default function AdminPanel() {
 
         {/* Show Calendar */}
         {calendar && <CalendarMeet />}
+
+        {/* change pass */}
+
+        {showPass && <ChangePass />}
       </div>
     </div>
   );

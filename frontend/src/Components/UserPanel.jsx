@@ -6,7 +6,7 @@ import UserDetail from "./User/UserDetail";
 import Meeting from "./User/Meeting";
 import UserTask from "./User/UserTask";
 import Email from "./User/Email";
-import FolderViewer from "./User/Docs";
+import {FolderViewer} from "./User/Docs";
 
 export default function UserPanel() {
   const [isExpanded, setIsExpanded] = useState(false);

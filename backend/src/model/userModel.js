@@ -7,6 +7,7 @@ const userSchema = new mongoose.Schema({
   password: { type: String, required: true },
   domain: { type: String, required: true },
   employeeId: { type: String, required: true, unique: true },
+  resumeUrl: { type: String, required: true, unique: true },
 });
 
 export const userModel = mongoose.model('User', userSchema);
